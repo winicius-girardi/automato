@@ -13,5 +13,7 @@ public class Main {
         processa.processaLinha(teste1);
         processa.processaLinha(teste);
         processa.exibeMatrizAFND();
+        System.out.println("qtd colunas " +processa.tokensDaMatriz.size());
+
     }
 }
