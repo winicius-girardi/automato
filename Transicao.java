@@ -3,17 +3,19 @@ import java.util.List;
 
 public class Transicao {
 
-    public List<String> tokenTransicao;
+    public String token;
 
-    public List<Integer> estadoTransicao;
+    public Integer estadoTransicaoToken;
+
+    public Integer estadoAtual;
+
+    public boolean estadoFinal;
 
 
-    public Transicao (){
-        tokenTransicao = new ArrayList<>();
-        estadoTransicao= new ArrayList<>();
+    public Transicao(String token, boolean estadoFinal,Integer estadoTransicaoToken,Integer estadoAtual) {
+        this.estadoFinal = estadoFinal;
+        this.token=token;
+        this.estadoTransicaoToken=estadoTransicaoToken;
+        this.estadoAtual=estadoAtual;
     }
-
-
-
-
 }

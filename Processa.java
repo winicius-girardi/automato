@@ -1,139 +1,149 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Processa {
 
-    private int ultimoEstado=0;
+    private int ultimoEstado = 0;
 
-    private int proximoEstado=1;
+    private int proximoEstado = 1;
 
     public List<String> tokensDaMatriz;
 
     private List<Transicao> transicoes;
 
-    private List<Integer> estadosFinais;
+    public int lengthPalavra;
 
-    private List<Integer> estadosIniciaisTransicao;
-
-    private List<String> tokensIniciais;
+    private List<String[]> matrizAutomato;
 
 
-
-    public Processa(){
+    public Processa() {
         tokensDaMatriz = new ArrayList<>();
-        transicoes= new ArrayList<>();
-        estadosFinais= new ArrayList<>();
-        estadosIniciaisTransicao= new ArrayList<>();
-        tokensIniciais= new ArrayList<>();
+        transicoes = new ArrayList<>();
+        matrizAutomato = new ArrayList<>();
     }
 
-    public void processaLinha(String linha){
+    public void processaLinha(String linha) {
 
-        if(linha.matches("[a-zA-Z]+"))
+        if (linha.matches("[a-zA-Z]+"))
             processaPalavra(linha);
         else
             processaGramatica(linha);
     }
 
-    public void processaPalavra (String  linha) {
+    private void processaGramatica(String linha) {
+    }
+
+    public void processaPalavra(String linha) {
+
         String[] aux = linha.split("");
-        Transicao transicao = new Transicao();
-        //        primeiroToken(aux[0], transicao);
-        primeroToken(aux[0]);
-        for (int i = 0; i < aux.length; i++) {
-            if (!tokensDaMatriz.contains(aux[i])) {
-                tokensDaMatriz.add(aux[i]);
+        lengthPalavra=aux.length;
+        for (int indexAtual=0; indexAtual < aux.length; indexAtual++) {
+            if (!tokensDaMatriz.contains(aux[indexAtual])) {
+                tokensDaMatriz.add(aux[indexAtual]);
             }
-            processaEstado(aux[i], transicao);
+            processaToken(aux[indexAtual],indexAtual);
+        }
+    }
+    private void processaToken(String s,int indexAtual) {
+        if(indexAtual==0){
+            Transicao aux1 = new Transicao(s,false,proximoEstado,0);
+            proximoEstado++;
+            ultimoEstado++;
+            transicoes.add(aux1);
+            return;
+        }
+        else {
+            Transicao aux = new Transicao(s, false, proximoEstado, ultimoEstado);
+            proximoEstado++;
+            ultimoEstado++;
+            transicoes.add(aux);
 
         }
-        estadosFinais.add(ultimoEstado);
-        //processaEstado(null,transicao);
-        transicoes.add(transicao);
-        ultimoEstado++;
-        proximoEstado++;
-    }
 
-    private void primeroToken(String aux) {
-        tokensIniciais.add(aux);
-        estadosIniciaisTransicao.add(proximoEstado);
-        proximoEstado++;
-        ultimoEstado++;
-    }
-
-//    }
-//    public void primeiroToken (String token,Transicao transicao){
-//        if(!tokensDaMatriz.contains(token)){
-//            tokensDaMatriz.add(token);
-//        }
-//        transicao.tokenTransicao.add(token);
-//        transicao.estadoTransicao.add(proximoEstado);
-//        proximoEstado++;
-//        ultimoEstado++;
-//    }
-
-    public void processaEstado(String token,Transicao transicao){
-        transicao.tokenTransicao.add(token);
-        transicao.estadoTransicao.add(proximoEstado);
-        proximoEstado++;
-        ultimoEstado++;
-    }
-
-
-    public void processaGramatica (String  linha){
-
-    }
-
-    public void exibeMatrizAFND(){
-        System.out.println("Matriz AFND");
-        System.out.print("\t| ");
-        for (String token : tokensDaMatriz){
-            System.out.print(token + " | " );
+        if(indexAtual==lengthPalavra-1) {
+            Transicao a = new Transicao(null,true,proximoEstado,ultimoEstado);
+            proximoEstado++;
+            ultimoEstado++;
+            transicoes.add(a);
         }
-        System.out.println();
-        for (Transicao transicao : transicoes){
 
-            for(String token:transicao.tokenTransicao){
-                if(estadosFinais.contains(transicao.estadoTransicao.get(transicao.tokenTransicao.indexOf(token)))){
-                    System.out.print(transicao.estadoTransicao.get(transicao.tokenTransicao.indexOf(token)) - 1);
-                    printaLinhaMatriz(tokensDaMatriz.indexOf(token),transicao);
-                    System.out.println();
-                    System.out.print( (transicao.estadoTransicao.get(transicao.tokenTransicao.indexOf(token)))+"*");
-                    printaLinhaMatrizFinal();
-                    System.out.println();
-                    continue;
-                }
-                else {
-                    System.out.print(transicao.estadoTransicao.get(transicao.tokenTransicao.indexOf(token)) - 1);
-                }
-                printaLinhaMatriz(tokensDaMatriz.indexOf(token),transicao);
-                System.out.println();
+    }
+
+    private void montaMatrizAutomato() {
+        adicionaTransicao();
+        for (Transicao transicao : transicoes) {
+            montaLinhaToken(transicao);
+
+        }
+        adicionaEstadoErro();
+    }
+
+    private void adicionaEstadoErro() {
+        String[]aux = new String[tokensDaMatriz.size()+1];
+        Arrays.fill(aux, "erro");
+        aux[0]=aux[0]+"*";
+        matrizAutomato.add(aux);
+    }
+
+    private void adicionaTransicao() {
+        String[]aux = new String[tokensDaMatriz.size()+1];
+        aux[0]=" ";
+        for (int i = 1; i < aux.length; i++) {
+            aux[i] = tokensDaMatriz.get(i-1);
+        }
+        matrizAutomato.add(aux);
+    }
+
+    public void montaLinhaToken(Transicao transicao) {
+        if (!existeTransicao(transicao))
+            criaLinha(transicao);
+        achaLinha(transicao);
+
+    }
+
+    private void achaLinha(Transicao transicao){
+        String[] aux=matrizAutomato.get(transicao.estadoTransicaoToken);
+        if(transicao.estadoAtual==0)
+            aux=matrizAutomato.get(1);
+        String[] tokens=matrizAutomato.get(0);
+        if(transicao.estadoFinal)
+            aux[0]=aux[0]+"*";
+        for (int k=1;k<tokensDaMatriz.size()+1;k++){
+            if(tokens[k].equals(transicao.token)){
+                aux[k]=transicao.estadoTransicaoToken.toString();
+                break;
             }
         }
-
     }
 
-    private void printaLinhaMatrizFinal() {
-        System.out.print("\t| ");
-        for (String token : tokensDaMatriz){
-            System.out.print( "  | " );
+    public void criaLinha(Transicao transicao) {
+        String []aux = new String[tokensDaMatriz.size()+1];
+        for (int i=1;i<aux.length;i++){
+            aux[i] = "erro";
         }
 
-
+        aux[0]=transicao.estadoAtual.toString();
+        matrizAutomato.add(aux);
     }
 
-    public void printaLinhaMatriz(int index,Transicao transicao) {
-        System.out.print("\t| ");
-        for (String token : tokensDaMatriz){
-            if(token.equals(tokensDaMatriz.get(index))){
-                System.out.print( transicao.estadoTransicao.get(transicao.tokenTransicao.indexOf(token))+ " | ");
-                continue;
+    private boolean existeTransicao(Transicao transicao) {
+        return matrizAutomato.size()<transicao.estadoAtual;
+    }
+    public void printaMatrizAutomato() {
+        montaMatrizAutomato();
+        for(String []a:matrizAutomato){
+            for(String s:a){
+                System.out.printf("%s\t",s);
             }
-            System.out.print( "  | " );
+            System.out.println();
         }
-
     }
-    public void printaMatrizAFND(){}
-
-
 }
+
+
+
+
+
+
+
