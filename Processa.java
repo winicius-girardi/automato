@@ -16,6 +16,8 @@ public class Processa {
 
     private List<String[]> matrizAutomato;
 
+    private Integer ultimaLinhaMatriz=0;
+
 
     public Processa() {
         tokensDaMatriz = new ArrayList<>();
@@ -123,7 +125,8 @@ public class Processa {
             aux[i] = "erro";
         }
 
-        aux[0]=transicao.estadoAtual.toString();
+        aux[0]=ultimaLinhaMatriz.toString();
+        ultimaLinhaMatriz++;
         matrizAutomato.add(aux);
     }
 
