@@ -18,11 +18,14 @@ public class Processa {
 
     private Integer ultimaLinhaMatriz=0;
 
+    private List<RegraGramatica> regraExistentes;
+
 
     public Processa() {
         tokensDaMatriz = new ArrayList<>();
         transicoes = new ArrayList<>();
         matrizAutomato = new ArrayList<>();
+        regraExistentes = new ArrayList<>();
     }
 
     public void processaLinha(String linha) {
@@ -34,20 +37,63 @@ public class Processa {
     }
 
     private void processaGramatica(String linha) {
+        if(linha.contains("<S> ::="))
+            processaTransicaoInicial(linha);
     }
+
+    private void processaTransicaoInicial(String linha) {
+        linha = linha.substring(7);
+        String[] tokens = linha.split("\\|");
+        for(String a:tokens){
+            String []aux=a.replace("<","").replace(">","").replace(" ","").split("");
+            if(a.replace(" ", "").matches("^[a-z]<[a-zA-Z]>$")){
+                if(!tokensDaMatriz.contains(aux[0]))
+                    tokensDaMatriz.add(aux[0]);
+                if(existeRegra(aux[1], proximoEstado)){
+                    for(RegraGramatica regra:regraExistentes){
+                        if(regra.getNome().equals(aux[1])){
+                            processaToken(aux[0],false,regra.getTransicao());
+                        }
+                    }
+                }
+                else {
+                    processaToken(aux[0], 0, false);
+                }}
+        }
+    }
+
+    private void processaToken(String aux, boolean estado, Integer transicao) {
+        Transicao transicaoAux = new Transicao(aux,estado,transicao,0);
+        transicoes.add(transicaoAux);
+    }
+
+    //anota as regras da LR para fazer corretamente as transições da matriz
+    private boolean existeRegra(String nomeRegra, Integer proximoEstado) {
+        for(RegraGramatica regra:regraExistentes){
+            if(regra.getNome().equals(nomeRegra)){
+
+                return true;
+            }
+        }
+        regraExistentes.add(new RegraGramatica(nomeRegra,proximoEstado));
+        return false;
+    }
+
 
     public void processaPalavra(String linha) {
 
         String[] aux = linha.split("");
         lengthPalavra=aux.length;
+        boolean estado;
         for (int indexAtual=0; indexAtual < aux.length; indexAtual++) {
             if (!tokensDaMatriz.contains(aux[indexAtual])) {
                 tokensDaMatriz.add(aux[indexAtual]);
             }
-            processaToken(aux[indexAtual],indexAtual);
+            estado=indexAtual==aux.length-1;
+            processaToken(aux[indexAtual],indexAtual,estado);
         }
     }
-    private void processaToken(String s,int indexAtual) {
+    private void processaToken(String s,int indexAtual,boolean estado) {
         if(indexAtual==0){
             Transicao aux1 = new Transicao(s,false,proximoEstado,0);
             proximoEstado++;
@@ -63,7 +109,7 @@ public class Processa {
 
         }
 
-        if(indexAtual==lengthPalavra-1) {
+        if(estado) {
             Transicao a = new Transicao(null,true,proximoEstado,ultimoEstado);
             proximoEstado++;
             ultimoEstado++;
