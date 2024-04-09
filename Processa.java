@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 public class Processa {
 
     private int ultimoEstado = 0;
@@ -19,7 +20,6 @@ public class Processa {
     private Integer ultimaLinhaMatriz=0;
 
     private List<RegraGramatica> regraExistentes;
-
 
     public Processa() {
         tokensDaMatriz = new ArrayList<>();
@@ -81,7 +81,6 @@ public class Processa {
 
 
     public void processaPalavra(String linha) {
-
         String[] aux = linha.split("");
         lengthPalavra=aux.length;
         boolean estado;
@@ -111,7 +110,6 @@ public class Processa {
 
         if(estado) {
             Transicao a = new Transicao(null,true,proximoEstado,ultimoEstado);
-            proximoEstado++;
             ultimoEstado++;
             transicoes.add(a);
         }
