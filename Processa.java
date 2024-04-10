@@ -41,9 +41,52 @@ public class Processa {
         if(linha.contains("<S> ::="))
             processaTransicaoInicial(linha);
         else{
-
+            processaTransicao(linha);
         }
     }
+
+    private void processaTransicao(String linha) {
+        String regraAtual = linha.substring(1, 2);
+        Integer regraTransicao=0;
+        linha = linha.substring(7);
+        String[] tokens = linha.split("\\|");
+        for (RegraGramatica regra : regraExistentes) {
+            if(regra.getNome().equals(regraAtual)){
+                regraTransicao=regra.getTransicao();
+                break;
+            }
+        }
+        for(String a:tokens){
+            String []aux=a.replace("<","").replace(">","").replace(" ","").split("");
+            if(a.replace(" ", "").matches("^[a-z]<[a-zA-Z]>$")) {
+                if (!tokensDaMatriz.contains(aux[0]))
+                    tokensDaMatriz.add(aux[0]);
+                Transicao transicao = new Transicao(aux[0],false, retornaTransicaoRegra(aux),regraTransicao);
+                transicoes.add(transicao);
+
+            }
+            else{
+                if(!tokensDaMatriz.contains(aux[0]))
+                    tokensDaMatriz.add(aux[0]);
+                //processaToken(aux[0],0,false);
+                Transicao transicao = new Transicao(aux[0],true, regraTransicao,regraTransicao,true);
+                transicoes.add(transicao);
+            }
+        }
+
+    }
+
+    private Integer retornaTransicaoRegra(String aux[]) {
+        for (RegraGramatica regra : regraExistentes) {
+            if (regra.getNome().equals(aux[1])) {
+                return regra.getTransicao();
+            }
+        }
+        RegraGramatica regra= new RegraGramatica(aux[0],proximoEstado);
+        ultimoEstado++;
+        return ++proximoEstado;
+    }
+
 
     private void processaTransicaoInicial(String linha) {
         linha = linha.substring(7);
@@ -53,15 +96,11 @@ public class Processa {
             if(a.replace(" ", "").matches("^[a-z]<[a-zA-Z]>$")){
                 if(!tokensDaMatriz.contains(aux[0]))
                     tokensDaMatriz.add(aux[0]);
-                if(existeRegra(aux[1], proximoEstado)){
-                    for(RegraGramatica regra:regraExistentes){
-                        if(regra.getNome().equals(aux[1])){
-                            processaToken(aux[0],false,regra.getTransicao());
-                        }
+                existeRegra(aux[1]);
+                for(RegraGramatica regra:regraExistentes){
+                    if(regra.getNome().equals(aux[1])){
+                        processaToken(aux[0],false,regra.getTransicao());
                     }
-                }
-                else {
-                    processaToken(aux[0], 0, false);
                 }
             }
             else{
@@ -85,15 +124,15 @@ public class Processa {
     }
 
     //anota as regras da LR para fazer corretamente as transições da matriz
-    private boolean existeRegra(String nomeRegra, Integer proximoEstado) {
+    private void existeRegra(String nomeRegra) {
         for(RegraGramatica regra:regraExistentes){
             if(regra.getNome().equals(nomeRegra)){
-
-                return true;
+                return;
             }
         }
-        regraExistentes.add(new RegraGramatica(nomeRegra,proximoEstado));
-        return false;
+        RegraGramatica regraAux =new RegraGramatica(nomeRegra,proximoEstado);
+        regraExistentes.add(regraAux);
+
     }
 
 
@@ -167,16 +206,19 @@ public class Processa {
 
     //adiciona a transicao de um token a uma estado da gramática
     private void achaLinha(Transicao transicao){
-        String[] aux=matrizAutomato.get(transicao.estadoTransicaoToken);
-        if(transicao.estadoAtual==0)
-            aux=matrizAutomato.get(1);
+        String[] aux=retornaLinha(transicao);//verificar
+//        if(transicao.estadoAtual==0)
+//            aux=matrizAutomato.get(1);
         String[] tokens=matrizAutomato.get(0);
-        if(transicao.estadoFinal)
+        if(transicao.estadoFinal&&!aux[0].contains("*"))
             aux[0]=aux[0]+"*";
         for (int k=1;k<tokensDaMatriz.size()+1;k++){
             if(tokens[k].equals(transicao.token)){
                 if(!transicao.terminal) {
-                    aux[k] = transicao.estadoTransicaoToken.toString();
+                    if(aux[k].equals("erro"))
+                        aux[k] = transicao.estadoTransicaoToken.toString();
+                    else
+                        aux[k]=aux[k]+","+transicao.estadoTransicaoToken.toString();
                 }
                 else {
                     aux[k]=transicao.token;
@@ -184,6 +226,14 @@ public class Processa {
                 break;
             }
         }
+    }
+
+    private String[] retornaLinha(Transicao transicao) {
+        for(String[]aux:matrizAutomato){
+            if(aux[0].replace("*","").equals(transicao.estadoAtual.toString()))
+                return aux;
+        }
+        return matrizAutomato.get(ultimaLinhaMatriz);
     }
 
     //cria linha para adicionar na matriz do automato e preenche com estados de erro e o nome do estado de transicao.
@@ -201,7 +251,7 @@ public class Processa {
     //verifica se o regra da transicao da gramatica existe na matriz.
     private boolean existeTransicao(Transicao transicao) {
         for(String[]aux:matrizAutomato){
-            if(aux[0].equals(transicao.estadoAtual.toString()))
+            if(aux[0].replace("*","").equals(transicao.estadoAtual.toString()))
                 return true;
         }
         return false;
