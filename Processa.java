@@ -2,7 +2,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@SuppressWarnings("ALL")
 public class Processa {
 
     private int ultimoEstado = 0;
@@ -76,7 +75,7 @@ public class Processa {
 
     }
 
-    private Integer retornaTransicaoRegra(String aux[]) {
+    private Integer retornaTransicaoRegra(String[] aux) {
         for (RegraGramatica regra : regraExistentes) {
             if (regra.getNome().equals(aux[1])) {
                 return regra.getTransicao();
@@ -235,6 +234,13 @@ public class Processa {
         }
         return matrizAutomato.get(ultimaLinhaMatriz);
     }
+    private String[] retornaLinha(String transicao) {
+        for(String[]aux:matrizAutomato){
+            if(aux[0].replace("*","").equals(transicao))
+                return aux;
+        }
+        return matrizAutomato.get(ultimaLinhaMatriz);
+    }
 
     //cria linha para adicionar na matriz do automato e preenche com estados de erro e o nome do estado de transicao.
     public void criaLinha(Transicao transicao) {
@@ -265,6 +271,94 @@ public class Processa {
             System.out.println();
         }
     }
+
+    public void printaAFD() {
+        determinizaMatriz();
+    }
+
+    private void determinizaMatriz() {
+        List<String[]> afd=new ArrayList<>();
+        afd.add(matrizAutomato.getFirst());
+        for(RegraGramatica regraGramatica:regraExistentes){
+            String[]aux=retornaLinha(regraGramatica.getTransicao().toString());
+            for(int i=1;i<aux.length;i++){
+                if(aux[i].contains(",")){
+                    String[] transicao=novaTransicao(aux[i]);
+                    afd.add(transicao);
+                }
+            }
+        }
+        for(String[]a:afd){
+            for(String s:a){
+                System.out.printf("%s\t",s);
+            }
+            System.out.println();
+        }
+    }
+
+    private String[] novaTransicao(String transicao) {
+        String[] aux= transicao.split(",");
+        String[] estado = new String[tokensDaMatriz.size()+1];
+        String[] estadoCopiado;
+        estado[0]="["+transicao.replace(",","")+"]";
+        for(String a:aux){
+            estadoCopiado=retornaLinha(a);
+            for(int i=1;i<estado.length;i++){
+                if(estado[i]!=null&&estadoCopiado[i].contains("erro")){
+                    estado[i]=estado[i]+","+estadoCopiado[i];
+                }
+                else
+                    estado[i]=estadoCopiado[i].replace("erro","");
+
+            }
+        }
+        return estado;
+
+    }
+//
+//    private void determinizaMatriz() {
+//        boolean novoEstado=false;
+//        List<String[]> afd= new ArrayList<String[]>();
+//        afd.add(matrizAutomato.get(0));
+//        for(String s:matrizAutomato.get(1)){
+//            if(s.contains(",")){
+//                afd.add(criaNovoEstado(s));//checar se o novo estado cria indeterminismo.
+//                novoEstado=true;
+//            }
+//            if(novoEstado)
+//                afd.add(matrizAutomato.get(1));
+//
+//        }
+//        for(String[]a:afd){
+//            for(String s:a){
+//                System.out.printf("%s\t",s);
+//            }
+//            System.out.println();
+//        }
+//        }
+//
+//    private String[] criaNovoEstado(String estadosTransicoes) {
+//        String[] aux = estadosTransicoes.split(",");
+//        String[] novoEstado = new String[tokensDaMatriz.size()+1];
+//        for(String estado:aux){
+//            String[] transicaoAux=retornaLinha(estado);
+//            if(novoEstado[0]!=null){
+//                novoEstado[0]="["+novoEstado[0].replace("[","").replace("]","")+transicaoAux[0]+"]";
+//            }
+//            else {
+//                novoEstado[0] = transicaoAux[0];
+//            }
+//            for(int k=1;k<tokensDaMatriz.size()+1;k++){
+//                if(novoEstado[k]==null){
+//                    novoEstado[k]=transicaoAux[k];
+//                }
+//                else
+//                    novoEstado[k]="["+novoEstado[k].replace("[","").replace("]","") +transicaoAux[k]+"]";
+//            }
+//        }
+//        return novoEstado;
+//    }
+
 }
 
 
