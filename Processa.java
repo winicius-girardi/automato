@@ -40,6 +40,9 @@ public class Processa {
     private void processaGramatica(String linha) {
         if(linha.contains("<S> ::="))
             processaTransicaoInicial(linha);
+        else{
+
+        }
     }
 
     private void processaTransicaoInicial(String linha) {
@@ -59,13 +62,26 @@ public class Processa {
                 }
                 else {
                     processaToken(aux[0], 0, false);
-                }}
+                }
+            }
+            else{
+                if(!tokensDaMatriz.contains(aux[0]))
+                    tokensDaMatriz.add(aux[0]);
+                //processaToken(aux[0],0,false);
+                processaToken(aux[0],true,0);
+            }
         }
     }
 
     private void processaToken(String aux, boolean estado, Integer transicao) {
+        if(estado){
+            Transicao transicao1 = new Transicao(aux,true,transicao,0,true);
+            transicoes.add(transicao1);
+        }
+        else{
         Transicao transicaoAux = new Transicao(aux,estado,transicao,0);
         transicoes.add(transicaoAux);
+        }
     }
 
     //anota as regras da LR para fazer corretamente as transições da matriz
@@ -159,7 +175,12 @@ public class Processa {
             aux[0]=aux[0]+"*";
         for (int k=1;k<tokensDaMatriz.size()+1;k++){
             if(tokens[k].equals(transicao.token)){
-                aux[k]=transicao.estadoTransicaoToken.toString();
+                if(!transicao.terminal) {
+                    aux[k] = transicao.estadoTransicaoToken.toString();
+                }
+                else {
+                    aux[k]=transicao.token;
+                }
                 break;
             }
         }
