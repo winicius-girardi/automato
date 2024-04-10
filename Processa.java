@@ -26,6 +26,7 @@ public class Processa {
         transicoes = new ArrayList<>();
         matrizAutomato = new ArrayList<>();
         regraExistentes = new ArrayList<>();
+        regraExistentes.add(new RegraGramatica("S",0));
     }
 
     public void processaLinha(String linha) {
@@ -148,6 +149,7 @@ public class Processa {
 
     }
 
+    //adiciona a transicao de um token a uma estado da gramática
     private void achaLinha(Transicao transicao){
         String[] aux=matrizAutomato.get(transicao.estadoTransicaoToken);
         if(transicao.estadoAtual==0)
@@ -163,6 +165,7 @@ public class Processa {
         }
     }
 
+    //cria linha para adicionar na matriz do automato e preenche com estados de erro e o nome do estado de transicao.
     public void criaLinha(Transicao transicao) {
         String []aux = new String[tokensDaMatriz.size()+1];
         for (int i=1;i<aux.length;i++){
@@ -174,8 +177,13 @@ public class Processa {
         matrizAutomato.add(aux);
     }
 
+    //verifica se o regra da transicao da gramatica existe na matriz.
     private boolean existeTransicao(Transicao transicao) {
-        return matrizAutomato.size()<transicao.estadoAtual;
+        for(String[]aux:matrizAutomato){
+            if(aux[0].equals(transicao.estadoAtual.toString()))
+                return true;
+        }
+        return false;
     }
     public void printaMatrizAutomato() {
         montaMatrizAutomato();
