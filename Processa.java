@@ -22,6 +22,10 @@ public class Processa {
 
     public List<String>fita;
 
+    public List<RegraMudadas> regraMudadas;
+
+    public List<String[]> afd;
+
     public Processa() {
         fita=new ArrayList<>();
         fita.add("-");
@@ -34,6 +38,9 @@ public class Processa {
         ignorarEstados.add("0");
         ignorarEstados.add("-");
         ignorarEstados.add(".");
+        regraMudadas = new ArrayList<>();
+        afd=new ArrayList<>();
+
     }
 
     public void processaLinha(String linha) {
@@ -307,7 +314,6 @@ public class Processa {
     }
 
     private void determinizaMatriz() {
-        List<String[]> afd=new ArrayList<>();
         afd.add(matrizAutomato.getFirst());
         boolean determinismo=true;
         for(RegraGramatica regraGramatica:regraExistentes){
@@ -315,6 +321,7 @@ public class Processa {
             for(int i=1;i<aux.length;i++){
                 if(aux[i].contains(",")){
                     novaTransicao(aux[i],afd);
+                    regraMudadas.add(new RegraMudadas(("["+aux[i].replace(",","")+"]"), List.of(aux[i].split(","))));
                     //String[] transicao=novaTransicao(aux[i],afd);
                     aux[i]="["+aux[i].replace(",","")+"]";
                     afd.add(aux);
@@ -391,6 +398,7 @@ public class Processa {
         for(int k=0;k<estado.length;k++){
             if(estado[k].contains(",")){
                 //a="["+a.replace(",","")+"]";
+                regraMudadas.add(new RegraMudadas(("["+estado[k].replace(",","")+"]"), List.of(estado[k].split(","))));
                 novaTransicao(estado[k],afd);
                 estado[k]="["+estado[k].replace(",","")+"]";
 
@@ -398,6 +406,10 @@ public class Processa {
         }
         afd.add(estado);
     }
+
+
+
+
     static class StringArrayComparator implements Comparator<String[]> {
         @Override
         public int compare(String[] arr1, String[] arr2) {
@@ -405,6 +417,7 @@ public class Processa {
             return arr1[0].compareTo(arr2[0]);
         }
     }
+
 
 
 }
