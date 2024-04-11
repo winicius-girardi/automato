@@ -41,7 +41,15 @@ public class Main {
         processa.printaMatrizAutomato();
         System.out.println("\nMatriz AFD:");
         processa.printaAFD();
-        System.out.println("\nFita\n");
+
+        System.out.println("\nFita Saída:\n");
+        for(String a:processa.fita) {
+            System.out.print(a+"\t");
+
+        }
+
+
+        System.out.println("\nTabela Saida\n");
         int k=0;
         for(Fita f: fita){
             System.out.println("Token:\t"+f.label);
