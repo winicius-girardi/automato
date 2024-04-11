@@ -10,6 +10,7 @@ public class Processa {
 
     public List<String> tokensDaMatriz;
 
+    @SuppressWarnings("FieldMayBeFinal")
     private List<Transicao> transicoes;
 
     public int lengthPalavra;
@@ -278,12 +279,22 @@ public class Processa {
     }
     public void printaMatrizAutomato() {
         montaMatrizAutomato();
-        for(String []a:matrizAutomato){
-            for(String s:a)
-                System.out.printf("\t%s\t|",s);
+        int numColumns = matrizAutomato.getFirst().length;
+        int[] columnWidths = new int[numColumns];
+        for (String[] row : matrizAutomato) {
+            for (int i = 0; i < numColumns; i++) {
+                columnWidths[i] = Math.max(columnWidths[i], row[i].length());
+            }
+        }
+        for (String[] row : matrizAutomato) {
+            for (int i = 0; i < numColumns; i++) {
+                System.out.print(String.format(" %-" + (columnWidths[i] + 2) + "s\t|", row[i]));
+            }
             System.out.println();
         }
+
     }
+
 
     public void printaAFD() {
         determinizaMatriz();
@@ -313,7 +324,17 @@ public class Processa {
                 afd.add(a);
         }
         afd.add(adicionaEstadoAfd());
-
+        List<String> estados=new ArrayList<>();
+        List<String[]> remove =new ArrayList<>();
+        for(String[]a:afd){
+            if(!estados.contains(a[0]))
+                estados.add(a[0]);
+            else
+                remove.add(a);
+        }
+        for(String[]a:remove){
+            afd.remove(a);
+        }
         int numColumns = afd.getFirst().length;
         int[] columnWidths = new int[numColumns];
         for (String[] row : afd) {
@@ -363,49 +384,6 @@ public class Processa {
         return estado;
 
     }
-//
-//    private void determinizaMatriz() {
-//        boolean novoEstado=false;
-//        List<String[]> afd= new ArrayList<String[]>();
-//        afd.add(matrizAutomato.get(0));
-//        for(String s:matrizAutomato.get(1)){
-//            if(s.contains(",")){
-//                afd.add(criaNovoEstado(s));//checar se o novo estado cria indeterminismo.
-//                novoEstado=true;
-//            }
-//            if(novoEstado)
-//                afd.add(matrizAutomato.get(1));
-//
-//        }
-//        for(String[]a:afd){
-//            for(String s:a){
-//                System.out.printf("%s\t",s);
-//            }
-//            System.out.println();
-//        }
-//        }
-//
-//    private String[] criaNovoEstado(String estadosTransicoes) {
-//        String[] aux = estadosTransicoes.split(",");
-//        String[] novoEstado = new String[tokensDaMatriz.size()+1];
-//        for(String estado:aux){
-//            String[] transicaoAux=retornaLinha(estado);
-//            if(novoEstado[0]!=null){
-//                novoEstado[0]="["+novoEstado[0].replace("[","").replace("]","")+transicaoAux[0]+"]";
-//            }
-//            else {
-//                novoEstado[0] = transicaoAux[0];
-//            }
-//            for(int k=1;k<tokensDaMatriz.size()+1;k++){
-//                if(novoEstado[k]==null){
-//                    novoEstado[k]=transicaoAux[k];
-//                }
-//                else
-//                    novoEstado[k]="["+novoEstado[k].replace("[","").replace("]","") +transicaoAux[k]+"]";
-//            }
-//        }
-//        return novoEstado;
-//    }
 
 }
 
