@@ -1,6 +1,4 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class Processa {
 
@@ -308,10 +306,11 @@ public class Processa {
             String[]aux=retornaLinha(regraGramatica.getTransicao().toString());
             for(int i=1;i<aux.length;i++){
                 if(aux[i].contains(",")){
-                    String[] transicao=novaTransicao(aux[i]);
+                    novaTransicao(aux[i],afd);
+                    //String[] transicao=novaTransicao(aux[i],afd);
                     aux[i]="["+aux[i].replace(",","")+"]";
                     afd.add(aux);
-                    afd.add(transicao);
+                    //afd.add(transicao);
                     determinismo=false;
                 }
             }
@@ -342,6 +341,7 @@ public class Processa {
                 columnWidths[i] = Math.max(columnWidths[i], row[i].length());
             }
         }
+        afd.sort(new StringArrayComparator());
         for (String[] row : afd) {
             for (int i = 0; i < numColumns; i++) {
                 System.out.print(String.format(" %-" + (columnWidths[i] + 2) + "s\t|", row[i]));
@@ -351,17 +351,16 @@ public class Processa {
 
     }
 
-    private String[] novaTransicao(String transicao) {
+    private void novaTransicao(String transicao,List afd) {
         String[] aux= transicao.split(",");
         String[] estado = new String[tokensDaMatriz.size()+1];
         String[] estadoCopiado;
-
         boolean estadoEhFinal= false;
         for(String a:aux){
             if(!ignorarEstados.contains(a.replace("*","")))
                 ignorarEstados.add(a.replace("*",""));
             if(retornaLinha(a)[0].contains("*")){
-                estado[0]="["+transicao.replace(",","")+"*]";
+                estado[0]="["+transicao.replace(",","").replace("[","").replace("]","")+"*]";
                 estadoEhFinal=true;
                 break;
             }
@@ -381,9 +380,23 @@ public class Processa {
 
             }
         }
-        return estado;
-
+        for(int k=0;k<estado.length;k++){
+            if(estado[k].contains(",")){
+                //a="["+a.replace(",","")+"]";
+                estado[k]="["+estado[k].replace(",","")+"]";
+                novaTransicao(estado[k],afd);
+            }
+        }
+        afd.add(estado);
     }
+    static class StringArrayComparator implements Comparator<String[]> {
+        @Override
+        public int compare(String[] arr1, String[] arr2) {
+            // Comparar os elementos do primeiro índice de cada array
+            return arr1[0].compareTo(arr2[0]);
+        }
+    }
+
 
 }
 
