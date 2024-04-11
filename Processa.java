@@ -8,7 +8,6 @@ public class Processa {
 
     public List<String> tokensDaMatriz;
 
-    @SuppressWarnings("FieldMayBeFinal")
     private List<Transicao> transicoes;
 
     public int lengthPalavra;
@@ -21,7 +20,11 @@ public class Processa {
 
     private List<String> ignorarEstados;
 
+    public List<String>fita;
+
     public Processa() {
+        fita=new ArrayList<>();
+        fita.add("-");
         tokensDaMatriz = new ArrayList<>();
         transicoes = new ArrayList<>();
         matrizAutomato = new ArrayList<>();
@@ -73,7 +76,9 @@ public class Processa {
                 if(!tokensDaMatriz.contains(aux[0]))
                     tokensDaMatriz.add(aux[0]);
                 //processaToken(aux[0],0,false);
+                fita.add(regraTransicao.toString());
                 Transicao transicao = new Transicao(aux[0],true, regraTransicao,regraTransicao,true);
+
                 transicoes.add(transicao);
             }
         }
@@ -111,6 +116,7 @@ public class Processa {
                 if(!tokensDaMatriz.contains(aux[0]))
                     tokensDaMatriz.add(aux[0]);
                 //processaToken(aux[0],0,false);
+                fita.add("0");
                 processaToken(aux[0],true,0);
             }
         }
@@ -139,7 +145,6 @@ public class Processa {
 
     }
 
-
     public void processaPalavra(String linha) {
         String[] aux = linha.split("");
         lengthPalavra=aux.length;
@@ -149,6 +154,8 @@ public class Processa {
                 tokensDaMatriz.add(aux[indexAtual]);
             }
             estado=indexAtual==aux.length-1;
+            if(estado)
+                fita.add(String.valueOf(proximoEstado));
             processaToken(aux[indexAtual],indexAtual,estado);
         }
     }
@@ -199,6 +206,7 @@ public class Processa {
         aux[0]=aux[0]+"*";
         return aux;
     }
+
     private void adicionaTransicao() {
         String[]aux = new String[tokensDaMatriz.size()+1];
         aux[0]="-";
@@ -362,7 +370,7 @@ public class Processa {
             if(retornaLinha(a)[0].contains("*")){
                 estado[0]="["+transicao.replace(",","").replace("[","").replace("]","")+"*]";
                 estadoEhFinal=true;
-                break;
+                //break;
             }
         }
         if(!estadoEhFinal)
@@ -383,8 +391,9 @@ public class Processa {
         for(int k=0;k<estado.length;k++){
             if(estado[k].contains(",")){
                 //a="["+a.replace(",","")+"]";
-                estado[k]="["+estado[k].replace(",","")+"]";
                 novaTransicao(estado[k],afd);
+                estado[k]="["+estado[k].replace(",","")+"]";
+
             }
         }
         afd.add(estado);
