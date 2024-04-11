@@ -20,12 +20,18 @@ public class Processa {
 
     private List<RegraGramatica> regraExistentes;
 
+    private List<String> ignorarEstados;
+
     public Processa() {
         tokensDaMatriz = new ArrayList<>();
         transicoes = new ArrayList<>();
         matrizAutomato = new ArrayList<>();
         regraExistentes = new ArrayList<>();
         regraExistentes.add(new RegraGramatica("S",0));
+        ignorarEstados=new ArrayList<>();
+        ignorarEstados.add("0");
+        ignorarEstados.add("-");
+        ignorarEstados.add(".");
     }
 
     public void processaLinha(String linha) {
@@ -147,6 +153,7 @@ public class Processa {
             processaToken(aux[indexAtual],indexAtual,estado);
         }
     }
+
     private void processaToken(String s,int indexAtual,boolean estado) {
         if(indexAtual==0){
             Transicao aux1 = new Transicao(s,false,proximoEstado,0);
@@ -175,21 +182,27 @@ public class Processa {
         adicionaTransicao();
         for (Transicao transicao : transicoes) {
             montaLinhaToken(transicao);
-
         }
         adicionaEstadoErro();
     }
 
     private void adicionaEstadoErro() {
         String[]aux = new String[tokensDaMatriz.size()+1];
-        Arrays.fill(aux, "erro");
+        Arrays.fill(aux, "-");
         aux[0]=aux[0]+"*";
         matrizAutomato.add(aux);
     }
 
+
+    private String[] adicionaEstadoAfd() {
+        String[]aux = new String[tokensDaMatriz.size()+1];
+        Arrays.fill(aux, "-");
+        aux[0]=aux[0]+"*";
+        return aux;
+    }
     private void adicionaTransicao() {
         String[]aux = new String[tokensDaMatriz.size()+1];
-        aux[0]=" ";
+        aux[0]="-";
         for (int i = 1; i < aux.length; i++) {
             aux[i] = tokensDaMatriz.get(i-1);
         }
@@ -214,7 +227,7 @@ public class Processa {
         for (int k=1;k<tokensDaMatriz.size()+1;k++){
             if(tokens[k].equals(transicao.token)){
                 if(!transicao.terminal) {
-                    if(aux[k].equals("erro"))
+                    if(aux[k].equals("-"))
                         aux[k] = transicao.estadoTransicaoToken.toString();
                     else
                         aux[k]=aux[k]+","+transicao.estadoTransicaoToken.toString();
@@ -234,6 +247,7 @@ public class Processa {
         }
         return matrizAutomato.get(ultimaLinhaMatriz);
     }
+
     private String[] retornaLinha(String transicao) {
         for(String[]aux:matrizAutomato){
             if(aux[0].replace("*","").equals(transicao))
@@ -246,7 +260,7 @@ public class Processa {
     public void criaLinha(Transicao transicao) {
         String []aux = new String[tokensDaMatriz.size()+1];
         for (int i=1;i<aux.length;i++){
-            aux[i] = "erro";
+            aux[i] = "-";
         }
 
         aux[0]=ultimaLinhaMatriz.toString();
@@ -265,9 +279,8 @@ public class Processa {
     public void printaMatrizAutomato() {
         montaMatrizAutomato();
         for(String []a:matrizAutomato){
-            for(String s:a){
-                System.out.printf("%s\t",s);
-            }
+            for(String s:a)
+                System.out.printf("\t%s\t|",s);
             System.out.println();
         }
     }
@@ -279,36 +292,71 @@ public class Processa {
     private void determinizaMatriz() {
         List<String[]> afd=new ArrayList<>();
         afd.add(matrizAutomato.getFirst());
+        boolean determinismo=true;
         for(RegraGramatica regraGramatica:regraExistentes){
             String[]aux=retornaLinha(regraGramatica.getTransicao().toString());
             for(int i=1;i<aux.length;i++){
                 if(aux[i].contains(",")){
                     String[] transicao=novaTransicao(aux[i]);
+                    aux[i]="["+aux[i].replace(",","")+"]";
+                    afd.add(aux);
                     afd.add(transicao);
+                    determinismo=false;
                 }
             }
+            if(determinismo)
+                afd.add(aux);
+            determinismo=true;
         }
-        for(String[]a:afd){
-            for(String s:a){
-                System.out.printf("%s\t",s);
+        for(String[]a:matrizAutomato){
+            if(!ignorarEstados.contains(a[0].replace("*","")))
+                afd.add(a);
+        }
+        afd.add(adicionaEstadoAfd());
+
+        int numColumns = afd.getFirst().length;
+        int[] columnWidths = new int[numColumns];
+        for (String[] row : afd) {
+            for (int i = 0; i < numColumns; i++) {
+                columnWidths[i] = Math.max(columnWidths[i], row[i].length());
+            }
+        }
+        for (String[] row : afd) {
+            for (int i = 0; i < numColumns; i++) {
+                System.out.print(String.format(" %-" + (columnWidths[i] + 2) + "s\t|", row[i]));
             }
             System.out.println();
         }
+
     }
 
     private String[] novaTransicao(String transicao) {
         String[] aux= transicao.split(",");
         String[] estado = new String[tokensDaMatriz.size()+1];
         String[] estadoCopiado;
-        estado[0]="["+transicao.replace(",","")+"]";
+
+        boolean estadoEhFinal= false;
+        for(String a:aux){
+            if(!ignorarEstados.contains(a.replace("*","")))
+                ignorarEstados.add(a.replace("*",""));
+            if(retornaLinha(a)[0].contains("*")){
+                estado[0]="["+transicao.replace(",","")+"*]";
+                estadoEhFinal=true;
+                break;
+            }
+        }
+        if(!estadoEhFinal)
+            estado[0]="["+transicao.replace(",","")+"]";
         for(String a:aux){
             estadoCopiado=retornaLinha(a);
             for(int i=1;i<estado.length;i++){
-                if(estado[i]!=null&&estadoCopiado[i].contains("erro")){
+                if(estado[i]!=null&&!estado[i].contains("-")){
+                    if(estadoCopiado[i].contains("-"))
+                        continue;
                     estado[i]=estado[i]+","+estadoCopiado[i];
                 }
                 else
-                    estado[i]=estadoCopiado[i].replace("erro","");
+                    estado[i]=estadoCopiado[i];
 
             }
         }
