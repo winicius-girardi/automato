@@ -25,7 +25,6 @@ public class Main {
         }
 
 
-
         System.out.println("Matriz AFND:");
         processa.printaMatrizAutomato();
         System.out.println("\nMatriz AFD:");
