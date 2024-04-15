@@ -21,6 +21,7 @@ public class Processa {
     private List<String> ignorarEstados;
 
     public List<String>fita;
+    public List<String[]> afd;
 
     public Processa() {
         fita=new ArrayList<>();
@@ -34,6 +35,8 @@ public class Processa {
         ignorarEstados.add("0");
         ignorarEstados.add("-");
         ignorarEstados.add(".");
+        afd=new ArrayList<>();
+
     }
 
     public void processaLinha(String linha) {
@@ -262,6 +265,15 @@ public class Processa {
         }
         return matrizAutomato.get(ultimaLinhaMatriz);
     }
+    public String[] retornaLinhaAFD(String token){
+            for(String[]aux:afd){
+                if(aux[0].replace("*","").equals(token))
+                    return aux;
+
+
+            }
+            return null;
+    }
 
     //cria linha para adicionar na matriz do automato e preenche com estados de erro e o nome do estado de transicao.
     public void criaLinha(Transicao transicao) {
@@ -307,7 +319,6 @@ public class Processa {
     }
 
     private void determinizaMatriz() {
-        List<String[]> afd=new ArrayList<>();
         afd.add(matrizAutomato.getFirst());
         boolean determinismo=true;
         for(RegraGramatica regraGramatica:regraExistentes){
@@ -398,6 +409,41 @@ public class Processa {
         }
         afd.add(estado);
     }
+
+    public String validaToken(String token,Integer posicao,String[]estado) {
+        Integer colunaToken=retornaColunaToken(token.charAt(posicao));
+        if(colunaToken!=null){
+            if(posicao<token.length()-1) {
+                if (!estado[colunaToken].contains("-")) {
+                    String[] aux = retornaLinhaAFD(estado[colunaToken]);
+                    if(posicao==token.length()-1){
+                        return estado[0];
+                    }
+                    posicao++;
+                    return validaToken(token, posicao, aux);
+                }
+            }
+            if(posicao==token.length()-1){
+                if(estado[0].contains("*"))
+                    return estado[0];
+                return estado[colunaToken];
+            }
+        }
+
+        return "-";
+    }
+
+
+    public Integer retornaColunaToken(char token){
+        for(int k=0;k<tokensDaMatriz.size();k++){
+            if(tokensDaMatriz.get(k).charAt(0)==token)
+                return k+1;
+        }
+        return null;
+    }
+
+
+
     static class StringArrayComparator implements Comparator<String[]> {
         @Override
         public int compare(String[] arr1, String[] arr2) {
