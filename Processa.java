@@ -8,17 +8,17 @@ public class Processa {
 
     public List<String> tokensDaMatriz;
 
-    private List<Transicao> transicoes;
+    private final List<Transicao> transicoes;
 
     public int lengthPalavra;
 
-    private List<String[]> matrizAutomato;
+    private final List<String[]> matrizAutomato;
 
     private Integer ultimaLinhaMatriz=0;
 
-    private List<RegraGramatica> regraExistentes;
+    private final List<RegraGramatica> regraExistentes;
 
-    private List<String> ignorarEstados;
+    private final List<String> ignorarEstados;
 
     public List<String>fita;
     public List<String[]> afd;
@@ -61,8 +61,8 @@ public class Processa {
         linha = linha.substring(7);
         String[] tokens = linha.split("\\|");
         for (RegraGramatica regra : regraExistentes) {
-            if(regra.getNome().equals(regraAtual)){
-                regraTransicao=regra.getTransicao();
+            if(regra.nome().equals(regraAtual)){
+                regraTransicao=regra.transicao();
                 break;
             }
         }
@@ -90,11 +90,10 @@ public class Processa {
 
     private Integer retornaTransicaoRegra(String[] aux) {
         for (RegraGramatica regra : regraExistentes) {
-            if (regra.getNome().equals(aux[1])) {
-                return regra.getTransicao();
+            if (regra.nome().equals(aux[1])) {
+                return regra.transicao();
             }
         }
-        RegraGramatica regra= new RegraGramatica(aux[0],proximoEstado);
         ultimoEstado++;
         return ++proximoEstado;
     }
@@ -110,8 +109,8 @@ public class Processa {
                     tokensDaMatriz.add(aux[0]);
                 existeRegra(aux[1]);
                 for(RegraGramatica regra:regraExistentes){
-                    if(regra.getNome().equals(aux[1])){
-                        processaToken(aux[0],false,regra.getTransicao());
+                    if(regra.nome().equals(aux[1])){
+                        processaToken(aux[0],false,regra.transicao());
                     }
                 }
             }
@@ -131,7 +130,7 @@ public class Processa {
             transicoes.add(transicao1);
         }
         else{
-        Transicao transicaoAux = new Transicao(aux,estado,transicao,0);
+        Transicao transicaoAux = new Transicao(aux, false,transicao,0);
         transicoes.add(transicaoAux);
         }
     }
@@ -139,7 +138,7 @@ public class Processa {
     //anota as regras da LR para fazer corretamente as transições da matriz
     private void existeRegra(String nomeRegra) {
         for(RegraGramatica regra:regraExistentes){
-            if(regra.getNome().equals(nomeRegra)){
+            if(regra.nome().equals(nomeRegra)){
                 return;
             }
         }
@@ -221,17 +220,15 @@ public class Processa {
 
     public void montaLinhaToken(Transicao transicao) {
         if (!existeTransicao(transicao))
-            criaLinha(transicao);
+            criaLinha();
         achaLinha(transicao);
 
     }
 
     //adiciona a transicao de um token a uma estado da gramática
     private void achaLinha(Transicao transicao){
-        String[] aux=retornaLinha(transicao);//verificar
-//        if(transicao.estadoAtual==0)
-//            aux=matrizAutomato.get(1);
-        String[] tokens=matrizAutomato.get(0);
+        String[] aux=retornaLinha(transicao);
+        String[] tokens=matrizAutomato.getFirst();
         if(transicao.estadoFinal&&!aux[0].contains("*"))
             aux[0]=aux[0]+"*";
         for (int k=1;k<tokensDaMatriz.size()+1;k++){
@@ -276,7 +273,7 @@ public class Processa {
     }
 
     //cria linha para adicionar na matriz do automato e preenche com estados de erro e o nome do estado de transicao.
-    public void criaLinha(Transicao transicao) {
+    public void criaLinha() {
         String []aux = new String[tokensDaMatriz.size()+1];
         for (int i=1;i<aux.length;i++){
             aux[i] = "-";
@@ -306,7 +303,7 @@ public class Processa {
         }
         for (String[] row : matrizAutomato) {
             for (int i = 0; i < numColumns; i++) {
-                System.out.print(String.format(" %-" + (columnWidths[i] + 2) + "s\t|", row[i]));
+                System.out.printf(" %-" + (columnWidths[i] + 2) + "s\t|", row[i]);
             }
             System.out.println();
         }
@@ -322,14 +319,12 @@ public class Processa {
         afd.add(matrizAutomato.getFirst());
         boolean determinismo=true;
         for(RegraGramatica regraGramatica:regraExistentes){
-            String[]aux=retornaLinha(regraGramatica.getTransicao().toString());
+            String[]aux=retornaLinha(regraGramatica.transicao().toString());
             for(int i=1;i<aux.length;i++){
                 if(aux[i].contains(",")){
-                    novaTransicao(aux[i],afd);
-                    //String[] transicao=novaTransicao(aux[i],afd);
+                    novaTransicao(aux[i]);
                     aux[i]="["+aux[i].replace(",","")+"]";
                     afd.add(aux);
-                    //afd.add(transicao);
                     determinismo=false;
                 }
             }
@@ -353,7 +348,7 @@ public class Processa {
         for(String[]a:remove){
             afd.remove(a);
         }
-        int numColumns = afd.getFirst().length;
+        var numColumns = afd.getFirst().length;
         int[] columnWidths = new int[numColumns];
         for (String[] row : afd) {
             for (int i = 0; i < numColumns; i++) {
@@ -363,14 +358,14 @@ public class Processa {
         afd.sort(new StringArrayComparator());
         for (String[] row : afd) {
             for (int i = 0; i < numColumns; i++) {
-                System.out.print(String.format(" %-" + (columnWidths[i] + 2) + "s\t|", row[i]));
+                System.out.printf(" %-" + (columnWidths[i] + 2) + "s\t|", row[i]);
             }
             System.out.println();
         }
 
     }
 
-    private void novaTransicao(String transicao,List afd) {
+    private void novaTransicao(String transicao) {
         String[] aux= transicao.split(",");
         String[] estado = new String[tokensDaMatriz.size()+1];
         String[] estadoCopiado;
@@ -402,7 +397,7 @@ public class Processa {
         for(int k=0;k<estado.length;k++){
             if(estado[k].contains(",")){
                 //a="["+a.replace(",","")+"]";
-                novaTransicao(estado[k],afd);
+                novaTransicao(estado[k]);
                 estado[k]="["+estado[k].replace(",","")+"]";
 
             }
@@ -417,7 +412,7 @@ public class Processa {
                 if (!estado[colunaToken].contains("-")) {
                     String[] aux = retornaLinhaAFD(estado[colunaToken]);
                     if(posicao==token.length()-1){
-                        return estado[0];
+                        return estado[0].replace("*","");
                     }
                     posicao++;
                     return validaToken(token, posicao, aux);
@@ -425,8 +420,8 @@ public class Processa {
             }
             if(posicao==token.length()-1){
                 if(estado[0].contains("*"))
-                    return estado[0];
-                return estado[colunaToken];
+                    return estado[0].replace("*","");
+                return estado[colunaToken].replace("*","");
             }
         }
 

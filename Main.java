@@ -30,7 +30,6 @@ public class Main {
         System.out.println("\nMatriz AFD:");
         processa.printaAFD();
         System.out.println("\nFita\n");
-        int k=0;
 
 
 
