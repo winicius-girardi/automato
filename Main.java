@@ -38,11 +38,15 @@ public class Main {
         estadoInicial= processa.afd.get(2);
         try (BufferedReader br = new BufferedReader(new FileReader(arquivoProcessa))) {
             String token;
+            String[] auxToken;
             while ((token = br.readLine()) != null) {
-                Fita aux = new Fita(token, numeroLinha);
-                aux.estado=processa.validaToken(token,0,estadoInicial);
-                fita.add(aux);
-                numeroLinha++;
+                auxToken=token.split(" ");
+                for(String t:auxToken){
+                    Fita aux = new Fita(t, numeroLinha);
+                    aux.estado=processa.validaToken(t,0,estadoInicial);
+                    fita.add(aux);
+                    numeroLinha++;
+                }
             }
         } catch (IOException e) {
             System.err.println("Erro ao ler o arquivo: " + e.getMessage());
