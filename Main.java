@@ -45,8 +45,9 @@ public class Main {
                     Fita aux = new Fita(t, numeroLinha);
                     aux.estado=processa.validaToken(t,0,estadoInicial);
                     fita.add(aux);
-                    numeroLinha++;
+                    ;
                 }
+                numeroLinha++;
             }
         } catch (IOException e) {
             System.err.println("Erro ao ler o arquivo: " + e.getMessage());
