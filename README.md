@@ -14,8 +14,8 @@
   - Programa le tokens/regras do arquivo "entrada_automato.txt" e constroi o AFD e AFND
   - Progrma le tokens do arquivo "entrada_reconhece.txt" e faz análise montando tabela  de saída e tabela de símbolos
     
-### Para rodar:
-### Necessário Java => 21.0.2
+## Para rodar:
+  - Necessário Java => 21.0.2
 ### Linux
 ```
 javac -d ./out  ./*.java 
