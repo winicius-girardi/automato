@@ -45,7 +45,7 @@ public class Main {
                     Fita aux = new Fita(t, numeroLinha);
                     aux.estado=processa.validaToken(t,0,estadoInicial);
                     fita.add(aux);
-                    ;
+
                 }
                 numeroLinha++;
             }
