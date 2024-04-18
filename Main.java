@@ -52,11 +52,18 @@ public class Main {
         } catch (IOException e) {
             System.err.println("Erro ao ler o arquivo: " + e.getMessage());
         }
-
+        System.out.println("\nTabela de símbolos:\n");
         for(Fita f: fita){
             System.out.println("Token:\t"+f.label);
             System.out.println("Linha:\t"+f.linha);
             System.out.println("Estado:\t"+f.estado+"\n\n");
         }
+
+        System.out.println("\nFita saída\n");
+        System.out.print("Estados:\t");
+        for(Fita f:fita){
+            System.out.print(f.estado+"\t");
+        }
+        System.out.println();
     }
 }
