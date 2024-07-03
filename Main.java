@@ -65,5 +65,21 @@ public class Main {
             System.out.print(f.estado+"\t");
         }
         System.out.println();
+        AnaliseSintatica analisa = new AnaliseSintatica();
+        analisa.leProd();
+
     }
 }
+//<S> ::= 'if' <Id> | 'print'<C> | 'id'<H>
+//<Id> ::= 'id' <Op> 'id' <A>|'id' <Op> 'number' <A>
+//<Op> ::= '>'| '<'| '=='
+//<A> ::= '{'<B>
+//<B> ::= '}'<I>
+//<C> ::= '('<D> | '('<E>
+//<D> ::= 'id'<Op2><F>| 'id'<F>
+//<Op2>::= '+'<D> | '-' <D> |
+//<E> ::= 'string'<F>
+//<F> ::=')'<G> |
+//<G> ::=';'
+//<H> ::= '='
+//<I> ::= 'else'<Id> |

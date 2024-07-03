@@ -1,0 +1,47 @@
+!-----------------------------------------------------------
+! Terminals
+!-----------------------------------------------------------
+Number         = {Digit}+
+Identifier     = {Letter}({Letter}|{Digit})*
+Whitespace     = {Whitespace}+
+Assignment     = '='
+Semicolon      = ';'
+LeftParen      = '('
+RightParen     = ')'
+LeftBrace      = '{'
+RightBrace     = '}'
+If             = 'if'
+Else           = 'else'
+Print          = 'print'
+Operator       = '>' | '<' | '>=' | '<=' | '==' | '!='
+
+!-----------------------------------------------------------
+! Ignore the Whitespace
+!-----------------------------------------------------------
+!Whitespace = {Whitespace}+
+
+!-----------------------------------------------------------
+! Rules
+!-----------------------------------------------------------
+"Start Symbol" = <program>
+<program>            ::= <statement_list>
+
+<statement_list>     ::= <statement> <statement_list>
+                       | <statement>
+
+<statement>          ::= <assignment>
+                       | <if_statement>
+                       | <print_statement>
+
+<assignment>         ::= Identifier Assignment <expression> Semicolon
+
+<if_statement>       ::= If LeftParen <condition> RightParen LeftBrace <statement_list> RightBrace
+                       | If LeftParen <condition> RightParen LeftBrace <statement_list> RightBrace Else LeftBrace <statement_list> RightBrace
+
+<print_statement>    ::= Print LeftParen Identifier RightParen Semicolon
+
+<condition>          ::= <expression> Operator <expression>
+
+<expression>         ::= Identifier
+                       | Number
+

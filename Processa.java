@@ -41,7 +41,7 @@ public class Processa {
 
     public void processaLinha(String linha) {
 
-        if (linha.matches("[a-zA-Z]+"))
+        if (!linha.matches("^<\"[a-zA-Z]\">"))
             processaPalavra(linha);
         else
             processaGramatica(linha);
@@ -425,7 +425,7 @@ public class Processa {
             }
         }
 
-        return "-";
+        return "a";
     }
 
 
