@@ -1,6 +1,7 @@
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -116,8 +117,7 @@ public class AnaliseSintatica {
                                 Element actionElement = (Element) actionNode;
                                 int symbolIndex = Integer.parseInt(actionElement.getAttribute("SymbolIndex"));
                                 String action = actionElement.getAttribute("Action");
-                                int value = Integer.parseInt(actionElement.getAttribute("Value"));
-                                AcaoLALR acaoLALR = new AcaoLALR(value,Integer.valueOf(action));
+                                AcaoLALR acaoLALR = new AcaoLALR(symbolIndex,Integer.valueOf(action));
                                 listAcao.add(acaoLALR);
                                 //CODIGO ABAIXO DE ADICIONAR OS SIMBOLOS TALVEZ SEJA DESNECESSARIO, AVERIGUAR, CASO PRECISE FALTAR PEGAR SIMBOLO?
 //                                lalrTable.simbolos.add(simbolo);
@@ -151,7 +151,14 @@ public class AnaliseSintatica {
             Integer estadoAtual= pilha.getLast();
             Integer tokenAtual= tokensIndices.get(posicaoLeitura);
             //OBTER A ACAO PARA O ESTADO ATUAL "LINHA" e TOKEN ATUAL no caso TOKEN INDICE?
-            AcaoLALR aux=lalrTable.acaoLALR.get(estadoAtual).get(tokenAtual);
+            List<AcaoLALR> listAcao=lalrTable.acaoLALR.get(estadoAtual);
+            AcaoLALR aux = null;
+            for(AcaoLALR a:listAcao){
+                if(a.valor.equals(tokenAtual)){
+                    aux=a;
+                }
+            }
+
             if(aux==null){
                 if(posicaoLeitura==fita.size()){
                     Fita f=fita.get(posicaoLeitura-1);
