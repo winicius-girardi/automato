@@ -198,23 +198,30 @@ public class AnaliseSintatica {
 
             }
             else if(aux.acao.equals(Acao.Reduce)){
-                Producao producaoReducao = producoes.get(aux.salto);
+
+                Producao producaoReducao=null;
+                for(Producao i:producoes){
+                    if(i.indice.equals(aux.salto)){
+                        producaoReducao=i;
+                    }
+                }
+
                 if (producaoReducao != null) {
                     int tamanhoProducao = producaoReducao.simbolosProducao.size();
                     for (int i = 0; i < tamanhoProducao; i++) {
                         pilha.remove(pilha.size() - 1);
                     }
-                    int estadoTopoAposRemocao = pilha.get(pilha.size() - 1);
-
+                    int estadoTopoAposRemocao = pilha.getLast();
+                    pilha.add(producaoReducao.indiceNaoTerminal);
                     // Obter o próximo estado usando a tabela GOTO
-                    List<AcaoLALR> gotoAction = lalrTable.acaoLALR.get(estadoTopoAposRemocao);
-
-                    for (AcaoLALR a : gotoAction) {
-                        if(a.salto.equals(producaoReducao.indiceNaoTerminal)){
-                            pilha.add(a.salto);
-                            break;
-                        }
-                    }
+//                    List<AcaoLALR> gotoAction = lalrTable.acaoLALR.get(producaoReducao.indiceNaoTerminal);
+//
+//                    for (AcaoLALR a : gotoAction) {
+//                        if(a.salto.equals(producaoReducao.indiceNaoTerminal)){
+//                            pilha.add(a.salto);
+//                            break;
+//                        }
+//                    }
 //                    if (gotoAction != null && gotoAction.acao.equals(Acao.GoTo)) {
 //                        pilha.add(gotoAction.valor);
 //                    } else {

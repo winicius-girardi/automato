@@ -1,0 +1,133 @@
+Simbolo{nome='EOF', indice=0}
+Simbolo{nome='Error', indice=1}
+Simbolo{nome='Whitespace', indice=2}
+Simbolo{nome='Assignment', indice=3}
+Simbolo{nome='Else', indice=4}
+Simbolo{nome='Identifier', indice=5}
+Simbolo{nome='If', indice=6}
+Simbolo{nome='LeftBrace', indice=7}
+Simbolo{nome='LeftParen', indice=8}
+Simbolo{nome='Number', indice=9}
+Simbolo{nome='Operator', indice=10}
+Simbolo{nome='Print', indice=11}
+Simbolo{nome='RightBrace', indice=12}
+Simbolo{nome='RightParen', indice=13}
+Simbolo{nome='Semicolon', indice=14}
+Simbolo{nome='assignment', indice=15}
+Simbolo{nome='condition', indice=16}
+Simbolo{nome='expression', indice=17}
+Simbolo{nome='if_statement', indice=18}
+Simbolo{nome='print_statement', indice=19}
+Simbolo{nome='program', indice=20}
+Simbolo{nome='statement', indice=21}
+Simbolo{nome='statement_list', indice=22}
+
+
+Claro, vamos incluir as transições Goto na tabela LALR. Aqui está a tabela completa com as ações Shift, Reduce, Goto e os IDs dos símbolos:
+
+### Tabela LALR
+
+| Estado | Símbolo        | ID  | Ação    | Próximo Estado/Valor da Redução |
+|--------|----------------|-----|---------|----------------------------------|
+| 0      | Identifier     | 5   | Shift   | 1                                |
+| 0      | If             | 6   | Shift   | 2                                |
+| 0      | Print          | 11  | Shift   | 3                                |
+| 0      | assignment     | 15  | Goto    | 4                                |
+| 0      | if_statement   | 18  | Goto    | 5                                |
+| 0      | print_statement| 19  | Goto    | 6                                |
+| 0      | program        | 20  | Goto    | 7                                |
+| 0      | statement      | 21  | Goto    | 8                                |
+| 0      | statement_list | 22  | Goto    | 9                                |
+| 1      | Assignment     | 3   | Shift   | 10                               |
+| 2      | LeftParen      | 8   | Shift   | 11                               |
+| 3      | LeftParen      | 8   | Shift   | 12                               |
+| 4      | EOF            | 0   | Reduce  | 3                                |
+| 4      | Identifier     | 5   | Reduce  | 3                                |
+| 4      | If             | 6   | Reduce  | 3                                |
+| 4      | Print          | 11  | Reduce  | 3                                |
+| 4      | RightBrace     | 12  | Reduce  | 3                                |
+| 5      | EOF            | 0   | Reduce  | 4                                |
+| 5      | Identifier     | 5   | Reduce  | 4                                |
+| 5      | If             | 6   | Reduce  | 4                                |
+| 5      | Print          | 11  | Reduce  | 4                                |
+| 5      | RightBrace     | 12  | Reduce  | 4                                |
+| 6      | EOF            | 0   | Reduce  | 5                                |
+| 6      | Identifier     | 5   | Reduce  | 5                                |
+| 6      | If             | 6   | Reduce  | 5                                |
+| 6      | Print          | 11  | Reduce  | 5                                |
+| 6      | RightBrace     | 12  | Reduce  | 5                                |
+| 7      | EOF            | 0   | Accept  | 0                                |
+| 8      | Identifier     | 5   | Shift   | 1                                |
+| 8      | If             | 6   | Shift   | 2                                |
+| 8      | Print          | 11  | Shift   | 3                                |
+| 8      | assignment     | 15  | Goto    | 4                                |
+| 8      | if_statement   | 18  | Goto    | 5                                |
+| 8      | print_statement| 19  | Goto    | 6                                |
+| 8      | statement      | 21  | Goto    | 8                                |
+| 8      | statement_list | 22  | Goto    | 13                               |
+| 8      | EOF            | 0   | Reduce  | 2                                |
+| 8      | RightBrace     | 12  | Reduce  | 2                                |
+| 9      | EOF            | 0   | Reduce  | 0                                |
+| 10     | Identifier     | 5   | Shift   | 14                               |
+| 10     | Number         | 9   | Shift   | 15                               |
+| 10     | expression     | 17  | Goto    | 16                               |
+| 11     | Identifier     | 5   | Shift   | 14                               |
+| 11     | Number         | 9   | Shift   | 15                               |
+| 11     | condition      | 16  | Goto    | 17                               |
+| 11     | expression     | 17  | Goto    | 18                               |
+| 12     | Identifier     | 5   | Shift   | 19                               |
+| 13     | EOF            | 0   | Reduce  | 1                                |
+| 13     | RightBrace     | 12  | Reduce  | 1                                |
+| 14     | Operator       | 10  | Shift   | 22                               |
+| 14     | Semicolon      | 13  | Reduce  | 11                               |
+| 14     | Else           | 14  | Reduce  | 11                               |
+| 15     | Operator       | 10  | Reduce  | 12                               |
+| 15     | Semicolon      | 13  | Reduce  | 12                               |
+| 15     | Else           | 14  | Reduce  | 12                               |
+| 16     | Else           | 14  | Shift   | 20                               |
+| 17     | RightParen     | 13  | Shift   | 21                               |
+| 18     | Operator       | 10  | Shift   | 22                               |
+| 19     | RightParen     | 13  | Shift   | 23                               |
+| 20     | EOF            | 0   | Reduce  | 6                                |
+| 20     | Identifier     | 5   | Reduce  | 6                                |
+| 20     | If             | 6   | Reduce  | 6                                |
+| 20     | Print          | 11  | Reduce  | 6                                |
+| 20     | RightBrace     | 12  | Reduce  | 6                                |
+| 21     | LeftBrace      | 7   | Shift   | 24                               |
+| 22     | Identifier     | 5   | Shift   | 14                               |
+| 22     | Number         | 9   | Shift   | 15                               |
+| 22     | expression     | 17  | Goto    | 25                               |
+| 23     | Else           | 14  | Shift   | 26                               |
+| 24     | Identifier     | 5   | Shift   | 1                                |
+| 24     | If             | 6   | Shift   | 2                                |
+| 24     | Print          | 11  | Shift   | 3                                |
+| 24     | assignment     | 15  | Goto    | 4                                |
+| 24     | if_statement   | 18  | Goto    | 5                                |
+| 24     | print_statement| 19  | Goto    | 6                                |
+| 24     | statement      | 21  | Goto    | 8                                |
+| 24     | statement_list | 22  | Goto    | 27                               |
+| 25     | Semicolon      | 13  | Reduce  | 10                               |
+| 26     | EOF            | 0   | Reduce  | 9                                |
+| 26     | Identifier     | 5   | Reduce  | 9                                |
+| 26     | If             | 6   | Reduce  | 9                                |
+| 26     | Print          | 11  | Reduce  | 9                                |
+| 26     | RightBrace     | 12  | Reduce  | 9                                |
+| 27     | RightBrace     | 12  | Shift   | 28                               |
+| 28     | Else           | 14  | Shift   | 29                               |
+| 28     | EOF            | 0   | Reduce  | 7                                |
+| 28     | Identifier     | 5   | Reduce  | 7                                |
+| 28     | If             | 6   | Reduce  | 7                                |
+| 28     | Print          | 11  | Reduce  | 7                                |
+| 28     | RightBrace     | 12  | Reduce  | 7                                |
+| 29     | LeftBrace      | 7   | Shift   | 30                               |
+| 30     | Identifier     | 5   | Shift   | 1                                |
+| 30     | If             | 6   | Shift   | 2                                |
+| 30     | Print          | 11  | Shift   | 3                                |
+| 30     | assignment     | 15  | Goto    | 4                                |
+| 30     | if_statement   | 18  | Goto    | 5                                |
+| 30     | print_statement| 19  | Goto    | 6                                |
+| 30     | statement      | 21  | Goto    | 8                                |
+| 30     | statement_list | 22  | Goto    | 31                               |
+| 31     | RightBrace     | 12  | Shift   | 32                               |
+| 32     | EOF            | 0   | Reduce  | 8                                |
+| z
