@@ -141,5 +141,122 @@ public class AnaliseSintatica {
             System.out.println("Erro ao ler xml");
         }
     }
+    public List<String> analisa(List<Fita> fita){
+        List<String> erros= new ArrayList<>();
+        List<Integer> tokensIndices = mapeiaFitaSaidaAnaliseSintatica(fita);
+        List<Integer> pilha = new ArrayList<>();
+        int posicaoLeitura=0;
+        pilha.add(lalrTable.estados.getFirst());
+        while(true){
+            Integer estadoAtual= pilha.getLast();
+            Integer tokenAtual= tokensIndices.get(posicaoLeitura);
+            //OBTER A ACAO PARA O ESTADO ATUAL "LINHA" e TOKEN ATUAL no caso TOKEN INDICE?
+            AcaoLALR aux=lalrTable.acaoLALR.get(estadoAtual).get(tokenAtual);
+            if(aux==null){
+                if(posicaoLeitura==fita.size()){
+                    Fita f=fita.get(posicaoLeitura-1);
+                    erros.add("Expressão invalida detectada! "+ f.label + " na linha " +f.linha +" nao é uma expressao");
+                }
+                else{
+                    Fita f=fita.get(posicaoLeitura);
+                    System.out.println("Token "+f.label +" inesperado na linha "+f.linha);
+                }
+                break;
+            }
+            else if(aux.acao.equals(Acao.Aceitar)){
+                break;
+            }
+            else if(aux.acao.equals(Acao.Shift)){
+                pilha.add(aux.valor);
+                posicaoLeitura++;
+            }
+            else if(aux.acao.equals(Acao.GoTo)){
+                int k=0,j=aux.valor,anterior= aux.valor;
+                while(k!=1) {
+                    AcaoLALR a=gotoLALR(estadoAtual,j);
+                    if(a.acao.equals(Acao.GoTo)){
+                        anterior=j;
+                        j=a.valor;
+                    }
+                    else{
+                        pilha.add(anterior);
+                        break;
+                    }
+                }
+            }
+            else if(aux.acao.equals(Acao.Reduce)){
+                Producao producaoReducao = producoes.get(aux.valor);
+                if (producaoReducao != null) {
+                    int tamanhoProducao = producaoReducao.simbolosProducao.size();
+                    for (int i = 0; i < tamanhoProducao; i++) {
+                        pilha.remove(pilha.size() - 1);
+                    }
+                    int estadoTopoAposRemocao = pilha.get(pilha.size() - 1);
+                    int estadoResultante = lalrTable.acaoLALR.get(estadoTopoAposRemocao).get(producaoReducao.indiceNaoTerminal).valor;
+                    pilha.add(estadoResultante);
+                } else {
+                    erros.add("Produção de redução não encontrada.");
+                    break;
+                }
+
+            }
+            if(posicaoLeitura==fita.size()){
+                erros.add("Código informado não foi reconhecido");
+                break;
+            }
+
+
+        }
+
+
+        return erros;
+    }
+    public AcaoLALR gotoLALR(Integer estadoAtual,int aux){
+        return  lalrTable.acaoLALR.get(estadoAtual).get(aux);
+    }
+
+    public List<Integer> mapeiaFitaSaidaAnaliseSintatica(List<Fita> fita){
+            List<Integer> tokensIndices = new ArrayList<>();
+            for(Fita f: fita){
+                tokensIndices.add(pegaIndiceRetornaIndiceGoldParser(f.label));
+            }
+            tokensIndices.add(lalrTable.estados.getFirst());
+            return tokensIndices;
+    }
+
+    public Integer pegaIndiceRetornaIndiceGoldParser(String label){
+
+        if(label.matches("="))
+            return 3;
+        if (label.matches(";"))
+            return 14;
+        if (label.matches("\\("))
+            return 8;
+        if (label.matches("\\)"))
+            return 13;
+        if (label.matches("\\{"))
+            return 7;
+        if (label.matches("}"))
+            return 12;
+        if (label.matches("if"))
+            return 6;
+        if (label.matches("else"))
+            return 4;
+        if (label.matches("==" )||label.matches(">")||label.matches("<")||label.matches(">=")||label.matches("<=")||label.matches("!="))
+            return 10;
+        if (label.matches("-?\\d+"))
+            return 9;
+        if (label.matches("[a-zA-Z][a-zA-Z0-9]*"))
+            return 5;
+        return 1;
+    }
+
+
+
+    public void exibeSimbolos(){
+        for(Simbolo simbolo : lalrTable.simbolos){
+            System.out.println(simbolo);
+        }
+    }
 }
 

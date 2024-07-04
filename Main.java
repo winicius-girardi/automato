@@ -71,6 +71,11 @@ public class Main {
         analisa.leSimbolos();
         analisa.leProducoes();
         analisa.leLALR();
+        //analisa.exibeSimbolos();
+        var erros=analisa.analisa(fita);
+        for(String i:erros){
+            System.out.println(i);
+        }
 
     }
 }

@@ -10,8 +10,8 @@ public class AcaoLALR {
 //    Aceitar = 4,
 //    Erro = 5
 
-    private Acao acao;
-    private Integer valor;
+    public Acao acao;
+    public Integer valor;
 
     public AcaoLALR(Integer valor,Integer acao){
         this.valor=valor;
