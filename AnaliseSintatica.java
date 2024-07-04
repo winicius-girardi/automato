@@ -154,6 +154,13 @@ public class AnaliseSintatica {
             //OBTER A ACAO PARA O ESTADO ATUAL "LINHA" e TOKEN ATUAL no caso TOKEN INDICE?
             List<AcaoLALR> listAcao=lalrTable.acaoLALR.get(estadoAtual);
             AcaoLALR aux = null;
+
+            System.out.println("Estados");
+            for(int i:pilha){
+                System.out.print(i+"\t");
+            }
+            System.out.println("\n");
+
             for(AcaoLALR a:listAcao){
                 if(a.valor.equals(tokenAtual)){
                     aux=a;
@@ -175,25 +182,23 @@ public class AnaliseSintatica {
                 break;
             }
             else if(aux.acao.equals(Acao.Shift)){
-                pilha.add(aux.salto);
+                pilha.add(aux.valor);
                 posicaoLeitura++;
             }
             else if(aux.acao.equals(Acao.GoTo)){
-                int k=0,j=aux.valor,anterior= aux.valor;
-                while(k!=1) {
-                    AcaoLALR a=gotoLALR(estadoAtual,j);
-                    if(a.acao.equals(Acao.GoTo)){
-                        anterior=j;
-                        j=a.valor;
-                    }
-                    else{
-                        pilha.add(anterior);
+                System.out.println(posicaoLeitura);
+                List<AcaoLALR> a=lalrTable.acaoLALR.get(aux.salto);
+                for(AcaoLALR i:a){
+                    if(i.salto.equals(aux.salto)){
+                        pilha.add(aux.salto);
                         break;
                     }
                 }
+                posicaoLeitura++;
+
             }
             else if(aux.acao.equals(Acao.Reduce)){
-                Producao producaoReducao = producoes.get(aux.valor);
+                Producao producaoReducao = producoes.get(aux.salto);
                 if (producaoReducao != null) {
                     int tamanhoProducao = producaoReducao.simbolosProducao.size();
                     for (int i = 0; i < tamanhoProducao; i++) {
@@ -205,8 +210,8 @@ public class AnaliseSintatica {
                     List<AcaoLALR> gotoAction = lalrTable.acaoLALR.get(estadoTopoAposRemocao);
 
                     for (AcaoLALR a : gotoAction) {
-                        if(a.valor.equals(producaoReducao.indiceNaoTerminal)){
-                            pilha.add(a.valor);
+                        if(a.salto.equals(producaoReducao.indiceNaoTerminal)){
+                            pilha.add(a.salto);
                             break;
                         }
                     }
