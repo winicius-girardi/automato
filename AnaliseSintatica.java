@@ -182,7 +182,7 @@ public class AnaliseSintatica {
                 break;
             }
             else if(aux.acao.equals(Acao.Shift)){
-                pilha.add(aux.valor);
+                pilha.add(aux.salto);
                 posicaoLeitura++;
             }
             else if(aux.acao.equals(Acao.GoTo)){
