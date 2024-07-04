@@ -1,3 +1,6 @@
+import Model.RegraGramatica;
+import Model.Transicao;
+
 import java.util.*;
 
 public class Processa {

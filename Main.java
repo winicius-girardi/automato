@@ -1,3 +1,5 @@
+import Model.Fita;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -12,7 +14,7 @@ public class Main {
 
 
         Processa processa = new Processa();
-        String nomeArquivo = "entrada_automato.txt";
+        String nomeArquivo = "Entrada/entrada_automato.txt";
         List<Fita> fita = new ArrayList<>();
         int numeroLinha = 1;
         try (BufferedReader br = new BufferedReader(new FileReader(nomeArquivo))) {
@@ -29,11 +31,11 @@ public class Main {
         processa.printaMatrizAutomato();
         System.out.println("\nMatriz AFD:");
         processa.printaAFD();
-        System.out.println("\nFita\n");
+        System.out.println("\nModel.Fita\n");
 
 
 
-        String arquivoProcessa = "entrada_reconhece.txt";
+        String arquivoProcessa = "Entrada/entrada_reconhece.txt";
         String[] estadoInicial ;
         estadoInicial= processa.afd.get(2);
         try (BufferedReader br = new BufferedReader(new FileReader(arquivoProcessa))) {
@@ -59,14 +61,16 @@ public class Main {
             System.out.println("Estado:\t"+f.estado+"\n\n");
         }
 
-        System.out.println("\nFita saída\n");
+        System.out.println("\nModel.Fita saída\n");
         System.out.print("Estados:\t");
         for(Fita f:fita){
             System.out.print(f.estado+"\t");
         }
         System.out.println();
         AnaliseSintatica analisa = new AnaliseSintatica();
-        analisa.leProd();
+        analisa.leSimbolos();
+        analisa.leProducoes();
+        analisa.leLALR();
 
     }
 }

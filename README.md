@@ -2,7 +2,7 @@
   - Construção autômato AFND
   - Construção autômato AFD
   - Analisador léxico
-  - Fita de saída dos tokens que foram reconhecidos
+  - Model.Fita de saída dos tokens que foram reconhecidos
   - Tabela de símbolos 
 
 ## Uso
