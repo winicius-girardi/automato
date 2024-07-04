@@ -117,7 +117,8 @@ public class AnaliseSintatica {
                                 Element actionElement = (Element) actionNode;
                                 int symbolIndex = Integer.parseInt(actionElement.getAttribute("SymbolIndex"));
                                 String action = actionElement.getAttribute("Action");
-                                AcaoLALR acaoLALR = new AcaoLALR(symbolIndex,Integer.valueOf(action));
+                                String salto = actionElement.getAttribute("Value");
+                                AcaoLALR acaoLALR = new AcaoLALR(symbolIndex,Integer.valueOf(action),Integer.valueOf(salto));
                                 listAcao.add(acaoLALR);
                                 //CODIGO ABAIXO DE ADICIONAR OS SIMBOLOS TALVEZ SEJA DESNECESSARIO, AVERIGUAR, CASO PRECISE FALTAR PEGAR SIMBOLO?
 //                                lalrTable.simbolos.add(simbolo);
@@ -174,7 +175,7 @@ public class AnaliseSintatica {
                 break;
             }
             else if(aux.acao.equals(Acao.Shift)){
-                pilha.add(aux.valor);
+                pilha.add(aux.salto);
                 posicaoLeitura++;
             }
             else if(aux.acao.equals(Acao.GoTo)){
