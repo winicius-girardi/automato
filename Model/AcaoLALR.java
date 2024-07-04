@@ -35,4 +35,11 @@ public class AcaoLALR {
 
     }
 
+    @Override
+    public String toString() {
+        return "AcaoLALR{" +
+                "acao=" + acao +
+                ", valor=" + valor +
+                '}';
+    }
 }

@@ -199,8 +199,22 @@ public class AnaliseSintatica {
                         pilha.remove(pilha.size() - 1);
                     }
                     int estadoTopoAposRemocao = pilha.get(pilha.size() - 1);
-                    int estadoResultante = lalrTable.acaoLALR.get(estadoTopoAposRemocao).get(producaoReducao.indiceNaoTerminal).valor;
-                    pilha.add(estadoResultante);
+
+                    // Obter o próximo estado usando a tabela GOTO
+                    List<AcaoLALR> gotoAction = lalrTable.acaoLALR.get(estadoTopoAposRemocao);
+
+                    for (AcaoLALR a : gotoAction) {
+                        if(a.valor.equals(producaoReducao.indiceNaoTerminal)){
+                            pilha.add(a.valor);
+                            break;
+                        }
+                    }
+//                    if (gotoAction != null && gotoAction.acao.equals(Acao.GoTo)) {
+//                        pilha.add(gotoAction.valor);
+//                    } else {
+//                        erros.add("Erro ao processar GOTO após redução.");
+//                        break;
+//                    }
                 } else {
                     erros.add("Produção de redução não encontrada.");
                     break;
