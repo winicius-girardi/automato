@@ -135,7 +135,7 @@ public class AnaliseSintatica {
                 }
 
                 // Print the parsed LALRTable
-                System.out.println(lalrTable);
+                //System.out.println(lalrTable);
             }
 
         } catch (Exception e) {
@@ -155,11 +155,11 @@ public class AnaliseSintatica {
             List<AcaoLALR> listAcao=lalrTable.acaoLALR.get(estadoAtual);
             AcaoLALR aux = null;
 
-            System.out.println("Estados");
-            for(int i:pilha){
-                System.out.print(i+"\t");
-            }
-            System.out.println("\n");
+        //    System.out.println("Estados");
+      //      for(int i:pilha){
+    //            System.out.print(i+"\t");
+  //          }
+//            System.out.println("\n");
 
             for(AcaoLALR a:listAcao){
                 if(a.valor.equals(tokenAtual)){
@@ -211,8 +211,17 @@ public class AnaliseSintatica {
                     for (int i = 0; i < tamanhoProducao; i++) {
                         pilha.remove(pilha.size() - 1);
                     }
+
                     int estadoTopoAposRemocao = pilha.getLast();
-                    pilha.add(producaoReducao.indiceNaoTerminal);
+                    int indiceNtermina=producaoReducao.indiceNaoTerminal;
+
+                    List<AcaoLALR> a =lalrTable.acaoLALR.get(estadoTopoAposRemocao);
+                    for(AcaoLALR l:a){
+                        if(l.valor.equals(indiceNtermina)){
+                            pilha.add(l.salto);
+                            break;
+                        }
+                    }
                     // Obter o próximo estado usando a tabela GOTO
 //                    List<AcaoLALR> gotoAction = lalrTable.acaoLALR.get(producaoReducao.indiceNaoTerminal);
 //
