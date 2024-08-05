@@ -12,9 +12,11 @@ public class AcaoLALR {
 
     public Acao acao;
     public Integer valor;
+    public Integer salto;
 
-    public AcaoLALR(Integer valor,Integer acao){
+    public AcaoLALR(Integer valor,Integer acao,Integer salto){
         this.valor=valor;
+        this.salto=salto;
         switch (acao) {
             case 1:
                 this.acao=Acao.Shift;
